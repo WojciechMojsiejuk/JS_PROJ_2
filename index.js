@@ -23,13 +23,18 @@ var config = {
 
 var game = new Phaser.Game(config);
 
-
 function preload() {
-    this.load.image('background', 'Assets/dark_background.png');
+    //Load image tilesets
+    this.load.image('blocks', 'Assets/Tilemaps/blocks.png');
+    this.load.image('krampus', 'Assets/Tilemaps/krampus.png');
     this.load.image('fallen_tree', 'Assets/Tilemaps/fallen_tree.png');
-    this.load.image('platform', 'Assets/GiantTree.png');
-    this.load.image('Blocks', 'Assets/Tilemaps/blocks.png');
+    this.load.image('gate', 'Assets/Tilemaps/gate.png');
+    this.load.image('tree', 'Assets/Tilemaps/tree.png');
+
+    //Load map
     this.load.tilemapTiledJSON('map', 'Assets/Tilemaps/level.json');
+
+    this.load.image('background', 'Assets/dark_background.png');
     this.load.atlas('player', 'Assets/Character/CharacterSpritesheet.png', 'Assets/Character/CharacterMap.json');
     // this.load.image('platform', 'Assets/StoneGate.png')
     //
@@ -39,7 +44,9 @@ function preload() {
     // );
 }
 
-var map, tileset, platformLayer;
+var map;
+var tilesets = {};
+var layers = {};
 var player;
 var cursors;
 
@@ -48,9 +55,20 @@ function create() {
     back.setOrigin(0)
     back.setScrollFactor(0);//fixedToCamera = true;
     map = this.make.tilemap({key: 'map'});
-    tileset = map.addTilesetImage('blocks','Blocks');
-    platformLayer = map.createStaticLayer('collision', tileset, 0, 0);
-    platformLayer.setCollisionByExclusion(-1, true);
+
+    //Load tilesets
+    tilesets["blocks"] = map.addTilesetImage('blocks','blocks');
+    tilesets["krampus"] = map.addTilesetImage('krampus','krampus');
+    tilesets["fallen_tree"] = map.addTilesetImage('fallen_tree','fallen_tree');
+    tilesets["gate"] = map.addTilesetImage('gate','gate');
+    tilesets["tree"] = map.addTilesetImage('tree','tree');
+
+    //Layer 1
+    layers["trees"] = map.createStaticLayer('trees', [ tilesets["tree"], tilesets["fallen_tree"] ], 0, 0);
+
+    //Layer 2
+    layers["collision"] = map.createStaticLayer('collision', tilesets["blocks"], 0, 0);
+    layers["collision"].setCollisionByExclusion(-1, true);
 
     //player section
     player = this.physics.add.sprite(200, 200, 'player');
@@ -59,7 +77,7 @@ function create() {
     player.setCollideWorldBounds(true);
     //let atlasTexture = this.textures.get('player');
     //let frames = atlasTexture.getFrameNames();
-    this.physics.add.collider(player, platformLayer);
+    this.physics.add.collider(player, layers["collision"]);
     // this.anims.create({
     //     key: 'walk',
     //     frames: frames,
