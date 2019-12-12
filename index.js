@@ -26,13 +26,13 @@ var game = new Phaser.Game(config);
 function preload() {
     //Load image tilesets
     this.load.image('blocks', 'Assets/Tilemaps/blocks.png');
-    this.load.image('krampus', 'Assets/Tilemaps/krampus.png');
+    // this.load.image('krampus', 'Assets/Tilemaps/krampus.png');
     this.load.image('fallen_tree', 'Assets/Tilemaps/fallen_tree.png');
     this.load.image('gate', 'Assets/Tilemaps/gate.png');
     this.load.image('tree', 'Assets/Tilemaps/tree.png');
 
     //Load map
-    this.load.tilemapTiledJSON('map', 'Assets/Tilemaps/level.json');
+    this.load.tilemapTiledJSON('map', 'Assets/Tilemaps/first_level.json');
 
     this.load.image('background', 'Assets/dark_background.png');
     this.load.atlas('player', 'Assets/Character/CharacterSpritesheet.png', 'Assets/Character/CharacterMap.json');
@@ -58,17 +58,24 @@ function create() {
 
     //Load tilesets
     tilesets["blocks"] = map.addTilesetImage('blocks','blocks');
-    tilesets["krampus"] = map.addTilesetImage('krampus','krampus');
+    // tilesets["krampus"] = map.addTilesetImage('enemy','enemy');
     tilesets["fallen_tree"] = map.addTilesetImage('fallen_tree','fallen_tree');
     tilesets["gate"] = map.addTilesetImage('gate','gate');
     tilesets["tree"] = map.addTilesetImage('tree','tree');
 
     //Layer 1
-    layers["trees"] = map.createStaticLayer('trees', [ tilesets["tree"], tilesets["fallen_tree"] ], 0, 0);
+    layers["background2"] = map.createStaticLayer('background2', [ tilesets["tree"], tilesets["fallen_tree"], tilesets["blocks"], tilesets["gate"] ], 0, 0);
 
     //Layer 2
+    layers["background3"] = map.createStaticLayer('background3', tilesets["blocks"], 0, 0);
+
+    //Layer 3
     layers["collision"] = map.createStaticLayer('collision', tilesets["blocks"], 0, 0);
     layers["collision"].setCollisionByExclusion(-1, true);
+
+    //Layer 4
+    layers["background1"] = map.createStaticLayer('background1', tilesets["blocks"], 0, 0);
+
 
     //player section
     player = this.physics.add.sprite(200, 200, 'player');
@@ -85,8 +92,8 @@ function create() {
     //     repeat: -1
     // });
 
-    this.cameras.main.setBounds(0, 0, 1280, 736);
-    this.physics.world.setBounds(0, 0, 1280, 736);
+    this.cameras.main.setBounds(0, 0, 3200, 600);
+    this.physics.world.setBounds(0, 0, 3200, 600);
     //this.camera.main.setOrigin()
     this.cameras.main.startFollow(player);
     cursors = this.input.keyboard.createCursorKeys();

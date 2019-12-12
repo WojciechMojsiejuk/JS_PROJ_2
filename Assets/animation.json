@@ -1,0 +1,28 @@
+{"frames": [
+
+{
+	"filename": "GiantTree.png",
+	"frame": {"x":0,"y":0,"w":731,"h":638},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":731,"h":638},
+	"sourceSize": {"w":731,"h":638}
+},
+{
+	"filename": "Krampus.png",
+	"frame": {"x":0,"y":638,"w":320,"h":320},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":320,"h":320},
+	"sourceSize": {"w":320,"h":320}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "animation.png",
+	"format": "RGBA8888",
+	"size": {"w":731,"h":958},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:eb2bc1eeb7292824e5ed4c297a349277:e6bf0a996bbfd63325feaafe96a527ab:9a4e7f1aae4f9765a57ff756284ef5fc$"
+}
+}
