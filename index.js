@@ -3,8 +3,8 @@ const appDiv = document.getElementById('app');
 
 var config = {
     type: Phaser.AUTO,
-    width: 1024,
-    height: 768,
+    width: 800,
+    height: 640,
     parent: appDiv,
     physics: {
         default: 'arcade',
