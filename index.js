@@ -26,10 +26,10 @@ var game = new Phaser.Game(config);
 
 function preload() {
     this.load.image('background', 'Assets/dark_background.png');
-    this.load.image('fallen_tree', 'Assets/FallenTree.png');
+    this.load.image('fallen_tree', 'Assets/Tilemaps/fallen_tree.png');
     this.load.image('platform', 'Assets/GiantTree.png');
-    this.load.image('TileSet', 'Assets/Tilemaps/TileSet.png');
-    this.load.tilemapTiledJSON('map', 'Assets/Tilemaps/Forest.json');
+    this.load.image('Blocks', 'Assets/Tilemaps/blocks.png');
+    this.load.tilemapTiledJSON('map', 'Assets/Tilemaps/level.json');
     this.load.atlas('player', 'Assets/Character/CharacterSpritesheet.png', 'Assets/Character/CharacterMap.json');
     // this.load.image('platform', 'Assets/StoneGate.png')
     //
@@ -48,8 +48,8 @@ function create() {
     back.setOrigin(0)
     back.setScrollFactor(0);//fixedToCamera = true;
     map = this.make.tilemap({key: 'map'});
-    tileset = map.addTilesetImage('TileSet','TileSet');
-    platformLayer = map.createStaticLayer('Warstwa Kafelków 1', tileset, 0, 0);
+    tileset = map.addTilesetImage('blocks','Blocks');
+    platformLayer = map.createStaticLayer('collision', tileset, 0, 0);
     platformLayer.setCollisionByExclusion(-1, true);
 
     //player section
