@@ -41,6 +41,9 @@ function preload() {
     //Load player
     this.load.atlas('player', 'Assets/Character/CharacterSpritesheet.png', 'Assets/Character/CharacterMap.json');
 
+    //Load enemies
+    this.load.multiatlas('krampus', 'Assets/Enemies/Krampus/walk_animation.json', 'Assets/Enemies/Krampus');
+
     //Load music
     this.load.audio("main_theme", 'Assets/Sounds/moon.mp3');
     // this.load.image('platform', 'Assets/StoneGate.png')
@@ -56,6 +59,7 @@ var tilesets = {};
 var layers = {};
 var player;
 var cursors;
+var krampus;
 
 function create() {
     let back = this.add.image(0, 0, 'background');
@@ -89,6 +93,9 @@ function create() {
     player.setScale(0.15).setOrigin(0);
     player.setBounce(0.05);
     player.setCollideWorldBounds(true);
+
+    //krampus
+    krampus = this.add.sprite(0,0,'krampus', 'Krampus.pmg');
     //let atlasTexture = this.textures.get('player');
     //let frames = atlasTexture.getFrameNames();
     this.physics.add.collider(player, layers["collision"]);
