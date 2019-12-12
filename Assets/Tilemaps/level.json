@@ -82,24 +82,87 @@
  "tileheight":32,
  "tilesets":[
         {
+         "columns":4,
          "firstgid":1,
-         "source":"blocks.tsx"
+         "image":"..\/new_block_assets.png",
+         "imageheight":128,
+         "imagewidth":128,
+         "margin":0,
+         "name":"blocks",
+         "spacing":0,
+         "tilecount":16,
+         "tileheight":32,
+         "tilewidth":32,
+         "transparentcolor":"#ff00ff"
         }, 
         {
+         "columns":6,
          "firstgid":17,
-         "source":"gate.tsx"
+         "image":"..\/ExampleGate.png",
+         "imageheight":276,
+         "imagewidth":192,
+         "margin":0,
+         "name":"gate",
+         "spacing":0,
+         "tilecount":48,
+         "tileheight":32,
+         "tilewidth":32,
+         "transparentcolor":"#ff00ff"
         }, 
         {
+         "columns":11,
          "firstgid":65,
-         "source":"fallen_tree.tsx"
+         "image":"..\/FallenTree.png",
+         "imageheight":166,
+         "imagewidth":359,
+         "margin":0,
+         "name":"fallen_tree",
+         "spacing":0,
+         "tilecount":55,
+         "tileheight":32,
+         "tilewidth":32,
+         "transparentcolor":"#ff00ff"
         }, 
         {
+         "columns":10,
          "firstgid":120,
-         "source":"krampus.tsx"
+         "image":"..\/Krampus.png",
+         "imageheight":320,
+         "imagewidth":320,
+         "margin":0,
+         "name":"Krampus",
+         "spacing":0,
+         "tilecount":100,
+         "tileheight":32,
+         "tilewidth":32
         }, 
         {
+         "columns":22,
          "firstgid":220,
-         "source":"tree.tsx"
+         "image":"..\/GiantTree.png",
+         "imageheight":638,
+         "imagewidth":731,
+         "margin":0,
+         "name":"tree",
+         "spacing":0,
+         "tilecount":418,
+         "tileheight":32,
+         "tilewidth":32,
+         "transparentcolor":"#ff00ff"
+        }, 
+        {
+         "columns":11,
+         "firstgid":638,
+         "image":"..\/FallenTree.png",
+         "imageheight":166,
+         "imagewidth":359,
+         "margin":0,
+         "name":"fallen_tree",
+         "spacing":0,
+         "tilecount":55,
+         "tileheight":32,
+         "tilewidth":32,
+         "transparentcolor":"#ff00ff"
         }],
  "tilewidth":32,
  "type":"map",
