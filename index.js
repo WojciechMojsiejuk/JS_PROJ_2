@@ -24,6 +24,7 @@ var config = {
 var game = new Phaser.Game(config);
 
 function preload() {
+
     //Load image tilesets
     this.load.image('blocks', 'Assets/Tilemaps/blocks.png');
     // this.load.image('krampus', 'Assets/Tilemaps/krampus.png');
@@ -34,8 +35,14 @@ function preload() {
     //Load map
     this.load.tilemapTiledJSON('map', 'Assets/Tilemaps/first_level.json');
 
+    //Load background
     this.load.image('background', 'Assets/dark_background.png');
+
+    //Load player
     this.load.atlas('player', 'Assets/Character/CharacterSpritesheet.png', 'Assets/Character/CharacterMap.json');
+
+    //Load music
+    this.load.audio("main_theme", 'Assets/Sounds/moon.mp3');
     // this.load.image('platform', 'Assets/StoneGate.png')
     //
     // this.load.spritesheet('player',
@@ -91,6 +98,20 @@ function create() {
     //     frameRate: 10,
     //     repeat: -1
     // });
+
+    //music section
+    let musicConfig = {
+            mute: false,
+            volume: 1,
+            rate: 1,
+            detune: 0,
+            seek: 0,
+            loop: true,
+            delay: 0
+
+        }
+    this.game_main_theme = this.sound.add("main_theme");
+    this.game_main_theme.play(musicConfig);
 
     this.cameras.main.setBounds(0, 0, 3200, 600);
     this.physics.world.setBounds(0, 0, 3200, 600);
