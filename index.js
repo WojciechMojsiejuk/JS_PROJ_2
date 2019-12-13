@@ -42,7 +42,7 @@ function preload() {
     this.load.atlas('player', 'Assets/Character/CharacterSpritesheet.png', 'Assets/Character/CharacterMap.json');
 
     //Load enemies
-    this.load.multiatlas('krampus', 'Assets/Enemies/Krampus/walk_animation.json', 'Assets/Enemies/Krampus');
+    this.load.atlas('krampus', 'Assets/Enemies/Krampus/walk_animation.png', 'Assets/Enemies/Krampus/walk_animation.json');
 
     //Load music
     this.load.audio("main_theme", 'Assets/Sounds/moon.mp3');
@@ -95,7 +95,7 @@ function create() {
     player.setCollideWorldBounds(true);
 
     //krampus
-    krampus = this.add.sprite(0,0,'krampus', 'Krampus.pmg');
+    krampus = this.add.sprite(200,200,'krampus');
     //let atlasTexture = this.textures.get('player');
     //let frames = atlasTexture.getFrameNames();
     this.physics.add.collider(player, layers["collision"]);
@@ -152,8 +152,19 @@ function create() {
     //
     //
     //
-
-    // this.physics.add.collider(player, platforms);
+    this.anims.create({
+        key: 'walk',
+        frames: this.anims.generateFrameNames('krampus', {
+            start: 0,
+            end: 2,
+            zeroPad: 1,
+            prefix: 'Krampus',
+            suffix: '.png'
+        }),
+        frameRate: 5,
+        repeat: -1
+    });
+    krampus.play('walk');
 }
 
 function update() {
