@@ -40,6 +40,7 @@ function preload() {
 
     //Load player
     this.load.atlas('player', 'Assets/Character/CharacterSpritesheet.png', 'Assets/Character/CharacterMap.json');
+    this.load.image('hearth', 'Assets/Character/hearth.png');
 
     //Load enemies
     this.load.atlas('krampus', 'Assets/Enemies/Krampus/walk_animation.png', 'Assets/Enemies/Krampus/walk_animation.json');
@@ -57,7 +58,8 @@ function preload() {
 var map;
 var tilesets = {};
 var layers = {};
-var player;
+var player, lifeImages = new Array();
+var gameOver = false, gameOverText;
 var cursors;
 var krampus;
 
@@ -91,8 +93,19 @@ function create() {
     //player section
     player = this.physics.add.sprite(200, 200, 'player');
     player.setScale(0.15).setOrigin(0);
-    player.setBounce(0.05);
+    //player.setBounce(0.05);
     player.setCollideWorldBounds(true);
+    player.lifes = 3;
+    player.maxLifes = 5;
+    for(let i=0;i<player.maxLifes;i++)
+    {
+        lifeImages.push(this.add.image(i * 50, 0, 'hearth').setScale(3).setOrigin(0, 0).setScrollFactor(0));
+    }
+    //hide hearths
+    for(let i = player.lifes; i<player.maxLifes;i++)
+    {
+        lifeImages[i].visible = false;
+    }
 
     //krampus
     krampus = this.add.sprite(200,200,'krampus');
@@ -125,6 +138,15 @@ function create() {
     //this.camera.main.setOrigin()
     this.cameras.main.startFollow(player);
     cursors = this.input.keyboard.createCursorKeys();
+
+    gameOverText = this.add.text(400, 320, 'GAME OVER', { fontFamily: 'Roboto Condensed' }).setOrigin(0.5).setScrollFactor(0);
+    gameOverText.setStyle({
+        fontSize: '64px',
+        fontFamily: 'Roboto Condensed',
+        color: '#ffffff',
+        align: 'center',
+    });
+    gameOverText.visible = false;
     // player = this.physics.add.sprite(50, 100, 'player');
     // player.setCollideWorldBounds(true);
     // player.setBounce(0.2);
@@ -167,15 +189,14 @@ function create() {
     krampus.play('walk');
 }
 
-function update() {
+function managePlayerInput()
+{
     if (cursors.left.isDown) {
-        //console.log("-150");
         player.flipX = true;
         player.setVelocityX(-200);
         //player.anims.play('walk', true);
     }
     else if (cursors.right.isDown) {
-        //console.log("150");
         player.flipX = false;
         player.setVelocityX(200);
         //player.anims.play('walk', true);
@@ -186,5 +207,40 @@ function update() {
     }
     if (cursors.up.isDown && (player.body.touching.down || player.body.onFloor())) {
         player.setVelocityY(-400);
+        player.lifes -= 1;
+    }
+}
+
+function updateLifes()
+{
+    //console.log(lifeImages);
+    //console.log(lifeImages.length);
+    //Show/hide life images
+    for(let i = 0; i < player.lifes; i++)
+    {
+        lifeImages[i].visible = true;
+    }
+    for(let i = player.lifes; i<lifeImages.length; i++)
+    {
+        lifeImages[i].visible = false;
+    }
+    if(player.lifes == 0)
+    {
+        gameOver = true;
+    }
+}
+
+function updateGameEnd()
+{
+    if(gameOver)
+        gameOverText.visible = true;
+}
+
+function update() {
+    if(!gameOver)
+    {
+        managePlayerInput();
+        updateLifes();
+        updateGameEnd();
     }
 }
