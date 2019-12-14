@@ -10,7 +10,7 @@ var config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 500 },
-            debug: false
+            debug: true
         }
     },
     scene: {
@@ -27,7 +27,6 @@ function preload() {
 
     //Load image tilesets
     this.load.image('blocks', 'Assets/Tilemaps/blocks.png');
-    // this.load.image('krampus', 'Assets/Tilemaps/krampus.png');
     this.load.image('fallen_tree', 'Assets/Tilemaps/fallen_tree.png');
     this.load.image('gate', 'Assets/Tilemaps/gate.png');
     this.load.image('tree', 'Assets/Tilemaps/tree.png');
@@ -43,10 +42,12 @@ function preload() {
     this.load.image('hearth', 'Assets/Character/hearth.png');
 
     //Load enemies
-    this.load.atlas('krampus', 'Assets/Enemies/Krampus/walk_animation.png', 'Assets/Enemies/Krampus/walk_animation.json');
+    this.load.atlas('krampus', 'Assets/Enemies/Krampus/krampus.png', 'Assets/Enemies/Krampus/krampus.json');
 
     //Load music
-    this.load.audio("main_theme", 'Assets/Sounds/moon.mp3');
+    this.load.audio("intro", 'Assets/Sounds/moon-intro.mp3');
+    this.load.audio("main_theme", 'Assets/Sounds/moon-main_theme.mp3');
+    this.load.audio("outro", 'Assets/Sounds/moon-outro.mp3');
     // this.load.image('platform', 'Assets/StoneGate.png')
     //
     // this.load.spritesheet('player',
@@ -71,7 +72,6 @@ function create() {
 
     //Load tilesets
     tilesets["blocks"] = map.addTilesetImage('blocks','blocks');
-    // tilesets["krampus"] = map.addTilesetImage('enemy','enemy');
     tilesets["fallen_tree"] = map.addTilesetImage('fallen_tree','fallen_tree');
     tilesets["gate"] = map.addTilesetImage('gate','gate');
     tilesets["tree"] = map.addTilesetImage('tree','tree');
@@ -108,31 +108,53 @@ function create() {
     }
 
     //krampus
-    krampus = this.add.sprite(200,200,'krampus');
+
     //let atlasTexture = this.textures.get('player');
     //let frames = atlasTexture.getFrameNames();
     this.physics.add.collider(player, layers["collision"]);
-    // this.anims.create({
-    //     key: 'walk',
-    //     frames: frames,
-    //     frameRate: 10,
-    //     repeat: -1
-    // });
 
-    //music section
-    let musicConfig = {
+    this.anims.create({
+        key: 'krampus_walk',
+        frames: this.anims.generateFrameNames('krampus', {
+            start: 0,
+            end: 1,
+            zeroPad: 1,
+            prefix: 'Krampus_walk_',
+            suffix: '.png'
+        }),
+        frameRate: 8,
+        repeat: -1
+    });
+
+    //music section begin
+    let introMusicConfig = {
             mute: false,
             volume: 1,
             rate: 1,
             detune: 0,
             seek: 0,
-            loop: true,
+            loop: false,
             delay: 0
 
-        }
-    this.game_main_theme = this.sound.add("main_theme");
-    this.game_main_theme.play(musicConfig);
+        };
 
+    let mainThemeMusicConfig = {
+        mute: false,
+        volume: 1,
+        rate: 1,
+        detune: 0,
+        seek: 0,
+        loop: true,
+        delay: 50000
+
+    };
+    this.game_intro_music = this.sound.add("intro");
+    this.game_intro_music.play(introMusicConfig);
+
+    this.game_main_theme_music = this.sound.add("main_theme");
+    this.game_main_theme_music.play(mainThemeMusicConfig);
+
+    //music section end
     this.cameras.main.setBounds(0, 0, 3200, 600);
     this.physics.world.setBounds(0, 0, 3200, 600);
     //this.camera.main.setOrigin()
@@ -147,46 +169,34 @@ function create() {
         align: 'center',
     });
     gameOverText.visible = false;
-    // player = this.physics.add.sprite(50, 100, 'player');
-    // player.setCollideWorldBounds(true);
-    // player.setBounce(0.2);
-    // this.cameras.main.startFollow(player)
+    //this.anims.create({
+    //    key: 'walk',
+    //    frames: this.anims.generateFrameNames('krampus', {
+    //        start: 0,
+    //        end: 2,
+    //        zeroPad: 1,
+    //        prefix: 'Krampus',
+    //        suffix: '.png'
+    //    }),
+    //    frameRate: 5,
+    //    repeat: -1
 
-    // this.anims.create({
-    //     key: 'idle',
-    //     frames:  [{ key: 'player', frame: 0 }],
-    //     frameRate: 10,
-    //     repeat: -1
-    // });
-    //
-    // this.anims.create({
-    //     key: 'walk',
-    //     frames: this.anims.generateFrameNumbers('player', { start: 2, end: 3 }),
-    //     frameRate: 20
-    // });
-    //
-    // this.anims.create({
-    //     key: 'right',
-    //     frames: this.anims.generateFrameNumbers('player', { start: 5, end: 8 }),
-    //     frameRate: 10,
-    //     repeat: -1
-    // });
-    //
-    //
-    //
-    this.anims.create({
-        key: 'walk',
-        frames: this.anims.generateFrameNames('krampus', {
-            start: 0,
-            end: 2,
-            zeroPad: 1,
-            prefix: 'Krampus',
-            suffix: '.png'
-        }),
-        frameRate: 5,
-        repeat: -1
+    krampus = this.physics.add.sprite(1600,300,'krampus');
+    this.physics.add.collider(krampus, layers["collision"]);
+    this.physics.add.collider(krampus, player);
+    krampus.play('krampus_walk');
+
+    this.tweens.add({
+        targets: krampus,
+        delay: 500,
+        x: 1400,
+        duration: 1000,
+        ease: 'Power0',
+        repeat: -1,
+        yoyo: true,
+        flipX: true
+
     });
-    krampus.play('walk');
 }
 
 function managePlayerInput()
@@ -243,4 +253,20 @@ function update() {
         updateLifes();
         updateGameEnd();
     }
+
+    this.physics.collide(krampus, player, function(){console.log("Collided")})
+
+
 }
+
+// function checkOverlap(spriteA, spriteB) {
+//
+//     console.log(spriteA);
+//     console.log(spriteB);
+//     GetOverlapX(spriteA, spriteB, false, 10);
+//     console.log(boundsA);
+//     console.log(boundsB);
+//
+//     return Phaser.Rectangle.intersects(boundsA, boundsB);
+//
+// }
