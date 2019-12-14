@@ -44,7 +44,9 @@ function preload() {
     this.load.atlas('krampus', 'Assets/Enemies/Krampus/krampus.png', 'Assets/Enemies/Krampus/krampus.json');
 
     //Load music
-    this.load.audio("main_theme", 'Assets/Sounds/moon.mp3');
+    this.load.audio("intro", 'Assets/Sounds/moon-intro.mp3');
+    this.load.audio("main_theme", 'Assets/Sounds/moon-main_theme.mp3');
+    this.load.audio("outro", 'Assets/Sounds/moon-outro.mp3');
     // this.load.image('platform', 'Assets/StoneGate.png')
     //
     // this.load.spritesheet('player',
@@ -111,20 +113,35 @@ function create() {
         repeat: -1
     });
 
-    //music section
-    let musicConfig = {
+    //music section begin
+    let introMusicConfig = {
             mute: false,
             volume: 1,
             rate: 1,
             detune: 0,
             seek: 0,
-            loop: true,
+            loop: false,
             delay: 0
 
-        }
-    // this.game_main_theme = this.sound.add("main_theme");
-    // this.game_main_theme.play(musicConfig);
+        };
 
+    let mainThemeMusicConfig = {
+        mute: false,
+        volume: 1,
+        rate: 1,
+        detune: 0,
+        seek: 0,
+        loop: true,
+        delay: 50000
+
+    };
+    this.game_intro_music = this.sound.add("intro");
+    this.game_intro_music.play(introMusicConfig);
+
+    this.game_main_theme_music = this.sound.add("main_theme");
+    this.game_main_theme_music.play(mainThemeMusicConfig);
+
+    //music section end
     this.cameras.main.setBounds(0, 0, 3200, 600);
     this.physics.world.setBounds(0, 0, 3200, 600);
     //this.camera.main.setOrigin()
