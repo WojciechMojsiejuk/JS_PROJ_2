@@ -217,7 +217,6 @@ function managePlayerInput()
     }
     if (cursors.up.isDown && (player.body.touching.down || player.body.onFloor())) {
         player.setVelocityY(-400);
-        player.lifes -= 1;
     }
 }
 
@@ -225,6 +224,10 @@ function updateLifes()
 {
     //console.log(lifeImages);
     //console.log(lifeImages.length);
+    if(player.lifes > player.maxLifes)
+    {
+        player.lifes = player.maxLifes;
+    }
     //Show/hide life images
     for(let i = 0; i < player.lifes; i++)
     {
@@ -234,14 +237,14 @@ function updateLifes()
     {
         lifeImages[i].visible = false;
     }
-    if(player.lifes == 0)
-    {
-        gameOver = true;
-    }
 }
 
 function updateGameEnd()
 {
+    if(player.lifes == 0)
+    {
+        gameOver = true;
+    }
     if(gameOver)
         gameOverText.visible = true;
 }
@@ -253,10 +256,11 @@ function update() {
         updateLifes();
         updateGameEnd();
     }
-
-    this.physics.collide(krampus, player, function(){console.log("Collided")})
-
-
+    this.physics.collide(krampus, player, function()
+    {
+        player.lifes -= 1;
+        console.log("Collided")
+    });
 }
 
 // function checkOverlap(spriteA, spriteB) {
