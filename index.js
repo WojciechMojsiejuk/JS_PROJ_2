@@ -58,10 +58,12 @@ function preload() {
     // );
 }
 
+//
 var map;
 var mainScene;
 var tilesets = {};
 var layers = {};
+var hearths, shields;
 //player
 var player, lifeImages = new Array(), shieldImages = new Array();
 var shieldTimer, damageReceivedTimer;
@@ -70,7 +72,9 @@ var throwKnifeKey;
 var listKnifes = new Array();
 //game over
 var gameOver = false, gameOverText;
+//keyboard
 var cursors;
+//enemies
 var krampus;
 
 function create() {
@@ -89,9 +93,27 @@ function create() {
     //Layer 1
     layers["background2"] = map.createStaticLayer('background2', [ tilesets["tree"], tilesets["fallen_tree"], tilesets["blocks"], tilesets["gate"] ], 0, 0);
 
-    //TODO: wczytać inaczej bo to teraz object layer Layer 2
-    layers["collectables1"] = map.createStaticLayer('collectables1', tilesets["blocks"], 0, 0);
-    console.log("Collectable1 layer: " + layers["collectables1"]);
+    //collectables1 == shields
+    shields = this.physics.add.group({
+        allowGravity: false,
+        immovable: true
+    });
+    const shieldObjects = map.getObjectLayer('collectables1')['objects'];
+    shieldObjects.forEach(shieldObject => {
+        shields.create(shieldObject.x, shieldObject.y, 'shield');
+    });
+    //collectables2 == hearths
+    hearths = this.physics.add.group({
+        allowGravity: false,
+        immovable: true
+    });
+    const hearthObjects = map.getObjectLayer('collectables2')['objects'];
+    hearthObjects.forEach(hearthObject => {
+        // Add new hearths to our sprite group
+        // const hearthObj =
+        hearths.create(hearthObject.x, hearthObject.y, 'hearth');
+    });
+    // layers["collectables1"] = map.createStaticLayer('collectables1', tilesets["blocks"], 0, 0);
 
     //Layer 3
     layers["collision"] = map.createStaticLayer('collision', tilesets["blocks"], 0, 0);
@@ -373,8 +395,16 @@ function throwKnife()
     if(!gameOver)
     {
         console.log("Throwing knife!");
-        let actualKnife = listKnifes.push(mainScene.physics.add.image(player.x, player.y, 'knife').setScale(0.2).setOrigin(0.5));
-        listKnifes[listKnifes.length - 1].setVelocityX(600);
+        if(player.flipX)
+        {
+            listKnifes.push(mainScene.physics.add.image(player.x, player.y, 'knife').setScale(0.2).setOrigin(0.5));
+            listKnifes[listKnifes.length - 1].setVelocityX(-600);
+        }
+        else
+        {
+            listKnifes.push(mainScene.physics.add.image(player.x, player.y, 'knife').setScale(0.2).setOrigin(0.5));
+            listKnifes[listKnifes.length - 1].setVelocityX(600);
+        }
     }
 }
 
