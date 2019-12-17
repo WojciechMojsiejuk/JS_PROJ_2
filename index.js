@@ -39,7 +39,8 @@ function preload() {
 
     //Load player
     this.load.atlas('player', 'Assets/Character/CharacterSpritesheet.png', 'Assets/Character/CharacterMap.json');
-    this.load.image('hearth', 'Assets/Character/hearth.png');
+    this.load.image('hearth', 'Assets/Character/Hearth.png');
+    this.load.image('shield', 'Assets/Character/Shield.png');
 
     //Load enemies
     this.load.atlas('krampus', 'Assets/Enemies/Krampus/krampus.png', 'Assets/Enemies/Krampus/krampus.json');
@@ -57,14 +58,20 @@ function preload() {
 }
 
 var map;
+var mainScene;
 var tilesets = {};
 var layers = {};
-var player, lifeImages = new Array();
+//player
+var player, lifeImages = new Array(), shieldImages = new Array();
+var shieldTimer, damageReceivedTimer;
+var useShieldKey;
+//game over
 var gameOver = false, gameOverText;
 var cursors;
 var krampus;
 
 function create() {
+    mainScene = this;
     let back = this.add.image(0, 0, 'background');
     back.setOrigin(0)
     back.setScrollFactor(0);//fixedToCamera = true;
@@ -80,7 +87,7 @@ function create() {
     layers["background2"] = map.createStaticLayer('background2', [ tilesets["tree"], tilesets["fallen_tree"], tilesets["blocks"], tilesets["gate"] ], 0, 0);
 
     //Layer 2
-    layers["background3"] = map.createStaticLayer('background3', tilesets["blocks"], 0, 0);
+    layers["collectables"] = map.createStaticLayer('collectables', tilesets["blocks"], 0, 0);
 
     //Layer 3
     layers["collision"] = map.createStaticLayer('collision', tilesets["blocks"], 0, 0);
@@ -107,6 +114,29 @@ function create() {
         lifeImages[i].visible = false;
     }
 
+    player.maxShields = 3;
+    player.shields = 2;
+    for(let i=0;i<player.maxShields;i++)
+    {
+        shieldImages.push(this.add.image(i * 50, 50, 'shield').setScale(1.5).setOrigin(0, 0).setScrollFactor(0));
+    }
+    //hide shields
+    for(let i = player.shields; i<player.maxShields;i++)
+    {
+        shieldImages[i].visible = false;
+    }
+    //received dmg timer (2s of invicibility after getting hit)
+    console.log(this);
+    damageReceivedTimer = this.time.addEvent({
+        delay: 2000,                // ms
+    });
+
+    ////shield timer (2s of invicibility)
+    // shieldTimer = this.time.addEvent({
+    //     delay: 2000,                // ms
+    // });
+    useShieldKey = this.input.keyboard.addKey('E');
+    useShieldKey.on('down', useShield);
     //krampus
 
     //let atlasTexture = this.textures.get('player');
@@ -218,6 +248,10 @@ function managePlayerInput()
     if (cursors.up.isDown && (player.body.touching.down || player.body.onFloor())) {
         player.setVelocityY(-400);
     }
+    if(false)
+    {
+
+    }
 }
 
 function updateLifes()
@@ -249,18 +283,83 @@ function updateGameEnd()
         gameOverText.visible = true;
 }
 
-function update() {
+function update()
+{
     if(!gameOver)
     {
         managePlayerInput();
+        this.physics.collide(krampus, player, function()
+        {
+            console.log("Collided")
+            loseHearth();
+        });
         updateLifes();
+        updateShields();
         updateGameEnd();
     }
-    this.physics.collide(krampus, player, function()
+}
+
+function loseHearth()
+{
+    //shield active - do not lose hearth
+    if(shieldTimer != undefined)
     {
+        if(shieldTimer.getElapsed() < shieldTimer.delay)
+            return;
+    }
+    if(damageReceivedTimer.getElapsed() >= damageReceivedTimer.delay)
+    {
+        console.log("Loosing hearth!");
         player.lifes -= 1;
-        console.log("Collided")
-    });
+        //restart timer (create again)
+        damageReceivedTimer.destroy();
+        damageReceivedTimer = mainScene.time.addEvent({
+            delay: 2000,                // ms
+        });
+    }
+}
+
+function useShield()
+{
+    if(player.shields > 0)
+    {
+        if(shieldTimer == undefined || shieldTimer.getElapsed() >= shieldTimer.delay)
+        {
+            player.shields -= 1;
+            //shieldTimer.destroy();
+            shieldTimer = mainScene.time.addEvent({
+                delay: 2000,                // ms
+            });
+        }
+    }
+}
+
+function updateShields()
+{
+    if(player.shields > player.maxShields)
+    {
+        player.shields = player.shields;
+    }
+    //Show/hide life images
+    for(let i = 0; i < player.shields; i++)
+    {
+        shieldImages[i].visible = true;
+    }
+    for(let i = player.shields; i<shieldImages.length; i++)
+    {
+        shieldImages[i].visible = false;
+    }
+    if(shieldTimer != undefined)
+    {
+        if(shieldTimer.getElapsed() < shieldTimer.delay)
+        {
+            player.tint = 0xFFFF00;
+        }
+        else
+        {
+            player.tint = 0xFFFFFF;
+        }
+    }
 }
 
 // function checkOverlap(spriteA, spriteB) {
