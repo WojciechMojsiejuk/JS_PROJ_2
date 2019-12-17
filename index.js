@@ -41,6 +41,7 @@ function preload() {
     this.load.atlas('player', 'Assets/Character/CharacterSpritesheet.png', 'Assets/Character/CharacterMap.json');
     this.load.image('hearth', 'Assets/Character/Hearth.png');
     this.load.image('shield', 'Assets/Character/Shield.png');
+    this.load.image('knife', 'Assets/Character/Knife.png');
 
     //Load enemies
     this.load.atlas('krampus', 'Assets/Enemies/Krampus/krampus.png', 'Assets/Enemies/Krampus/krampus.json');
@@ -65,6 +66,8 @@ var layers = {};
 var player, lifeImages = new Array(), shieldImages = new Array();
 var shieldTimer, damageReceivedTimer;
 var useShieldKey;
+var throwKnifeKey;
+var listKnifes = new Array();
 //game over
 var gameOver = false, gameOverText;
 var cursors;
@@ -86,8 +89,9 @@ function create() {
     //Layer 1
     layers["background2"] = map.createStaticLayer('background2', [ tilesets["tree"], tilesets["fallen_tree"], tilesets["blocks"], tilesets["gate"] ], 0, 0);
 
-    //Layer 2
-    layers["collectables"] = map.createStaticLayer('collectables', tilesets["blocks"], 0, 0);
+    //TODO: wczytać inaczej bo to teraz object layer Layer 2
+    layers["collectables1"] = map.createStaticLayer('collectables1', tilesets["blocks"], 0, 0);
+    console.log("Collectable1 layer: " + layers["collectables1"]);
 
     //Layer 3
     layers["collision"] = map.createStaticLayer('collision', tilesets["blocks"], 0, 0);
@@ -137,6 +141,9 @@ function create() {
     // });
     useShieldKey = this.input.keyboard.addKey('E');
     useShieldKey.on('down', useShield);
+
+    throwKnifeKey = this.input.keyboard.addKey('ENTER');
+    throwKnifeKey.on('down', throwKnife);
     //krampus
 
     //let atlasTexture = this.textures.get('player');
@@ -248,10 +255,6 @@ function managePlayerInput()
     if (cursors.up.isDown && (player.body.touching.down || player.body.onFloor())) {
         player.setVelocityY(-400);
     }
-    if(false)
-    {
-
-    }
 }
 
 function updateLifes()
@@ -321,15 +324,18 @@ function loseHearth()
 
 function useShield()
 {
-    if(player.shields > 0)
+    if(!gameOver)
     {
-        if(shieldTimer == undefined || shieldTimer.getElapsed() >= shieldTimer.delay)
+        if(player.shields > 0)
         {
-            player.shields -= 1;
-            //shieldTimer.destroy();
-            shieldTimer = mainScene.time.addEvent({
-                delay: 2000,                // ms
-            });
+            if(shieldTimer == undefined || shieldTimer.getElapsed() >= shieldTimer.delay)
+            {
+                player.shields -= 1;
+                //shieldTimer.destroy();
+                shieldTimer = mainScene.time.addEvent({
+                    delay: 2000,                // ms
+                });
+            }
         }
     }
 }
@@ -359,6 +365,16 @@ function updateShields()
         {
             player.tint = 0xFFFFFF;
         }
+    }
+}
+
+function throwKnife()
+{
+    if(!gameOver)
+    {
+        console.log("Throwing knife!");
+        let actualKnife = listKnifes.push(mainScene.physics.add.image(player.x, player.y, 'knife').setScale(0.2).setOrigin(0.5));
+        listKnifes[listKnifes.length - 1].setVelocityX(600);
     }
 }
 
