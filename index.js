@@ -38,7 +38,7 @@ function preload() {
     this.load.image('background', 'Assets/dark_background.png');
 
     //Load player
-    this.load.atlas('player', 'Assets/Character/CharacterSpritesheet.png', 'Assets/Character/CharacterMap.json');
+    this.load.atlas('player', 'Assets/Character/heroine.png', 'Assets/Character/heroine.json');
     this.load.image('hearth', 'Assets/Character/Hearth.png');
     this.load.image('shield', 'Assets/Character/Shield.png');
     this.load.image('knife', 'Assets/Character/Knife.png');
@@ -78,8 +78,12 @@ var levelPassed = false, levelPassedText, levelPassPositionX = 3050;
 var cursors;
 //enemies
 var krampus;
+
 //tutorial
 var moveText, shieldText, throwKnifeText;
+
+var player_is_jumping = false;
+var player_is_attacking = false;
 
 function create() {
     mainScene = this;
@@ -129,7 +133,7 @@ function create() {
 
     //player section
     player = this.physics.add.sprite(200, 200, 'player');
-    player.setScale(0.15).setOrigin(0);
+    player.setScale(0.9).setOrigin(0);
     //player.setBounce(0.05);
     player.setCollideWorldBounds(true);
     player.lifes = 3;
@@ -298,6 +302,72 @@ function create() {
         align: 'center',
     });
     levelPassedText.visible = false;
+
+    //player animations
+
+    this.anims.create({
+        key: 'player_walk',
+        frames: this.anims.generateFrameNames('player', {
+            start: 0,
+            end: 3,
+            zeroPad: 1,
+            prefix: 'heroine-walk-',
+            suffix: '.png'
+        }),
+        frameRate: 8,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: 'player_jump',
+        frames: this.anims.generateFrameNames('player', {
+            start: 1,
+            end: 4,
+            zeroPad: 1,
+            prefix: 'heroine-jump-',
+            suffix: '.png'
+        }),
+        frameRate: 8,
+        repeat: false
+    });
+
+    this.anims.create({
+        key: 'player_landing',
+        frames: this.anims.generateFrameNames('player', {
+            start: 5,
+            end: 6,
+            zeroPad: 1,
+            prefix: 'heroine-jump-',
+            suffix: '.png'
+        }),
+        frameRate: 5,
+        repeat: false
+    });
+    this.anims.create({
+        key: 'player_idle',
+        frames: this.anims.generateFrameNames('player', {
+            start: 6,
+            end: 6,
+            zeroPad: 1,
+            prefix: 'heroine-jump-',
+            suffix: '.png'
+        }),
+        frameRate: 8,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: 'player_attack',
+        frames: this.anims.generateFrameNames('player', {
+            start: 0,
+            end: 2,
+            zeroPad: 1,
+            prefix: 'heroine-attack-',
+            suffix: '.png'
+        }),
+        frameRate: 6,
+        repeat: false
+    });
 }
 
 function managePlayerInput()
@@ -305,19 +375,44 @@ function managePlayerInput()
     if (cursors.left.isDown) {
         player.flipX = true;
         player.setVelocityX(-200);
-        //player.anims.play('walk', true);
+        if(!player_is_attacking && (player.body.touching.down || player.body.onFloor()))
+        {
+            player.anims.play('player_walk', true);
+        }
+
     }
     else if (cursors.right.isDown) {
         player.flipX = false;
         player.setVelocityX(200);
-        //player.anims.play('walk', true);
+        if(!player_is_attacking && (player.body.touching.down || player.body.onFloor()))
+        {
+            player.anims.play('player_walk', true);
+        }
     }
     else {
         player.setVelocityX(0);
-        //player.anims.play('idle');
+        if (!player_is_jumping && !player_is_attacking && (player.body.touching.down || player.body.onFloor()))
+        {
+            player.anims.play('player_idle', true);
+        }
     }
-    if (cursors.up.isDown && (player.body.touching.down || player.body.onFloor())) {
-        player.setVelocityY(-400);
+    if (player_is_jumping && (player.body.touching.down || player.body.onFloor()))
+    {
+        player.anims.play('player_landing', true);
+        player_is_jumping = false;
+    }
+    else if (cursors.up.isDown && (player.body.touching.down || player.body.onFloor())) {
+        player.anims.play('player_walk', false);
+        player.anims.play('player_jump', true);
+        player_is_jumping = true;
+        mainScene.time.addEvent({
+            delay: 5, // in ms
+            callback: () => {
+                player.setVelocityY(-400);
+            }
+        });
+
+
     }
 }
 
@@ -432,7 +527,7 @@ function updateShields()
     {
         if(shieldTimer.getElapsed() < shieldTimer.delay)
         {
-            player.tint = 0xFFFF00;
+            player.tint = 0x000000;
         }
         else
         {
@@ -448,13 +543,29 @@ function throwKnife()
         console.log("Throwing knife!");
         if(player.flipX)
         {
-            listKnifes.push(mainScene.physics.add.image(player.x, player.y, 'knife').setScale(0.2).setOrigin(0.5));
-            listKnifes[listKnifes.length - 1].setVelocityX(-600);
+            player_is_attacking = true;
+            player.anims.play('player_attack', true);
+            mainScene.time.addEvent({
+                delay: 500, // in ms
+                callback: () => {
+                    listKnifes.push(mainScene.physics.add.image(player.x, player.y, 'knife').setScale(0.2).setOrigin(0.5));
+                    listKnifes[listKnifes.length - 1].setVelocityX(-600);
+                    player_is_attacking = false;
+                }
+            });
+
         }
         else
         {
-            listKnifes.push(mainScene.physics.add.image(player.x, player.y, 'knife').setScale(0.2).setOrigin(0.5));
-            listKnifes[listKnifes.length - 1].setVelocityX(600);
+            player.anims.play('player_attack', true);
+            mainScene.time.addEvent({
+                delay: 500, // in ms
+                callback: () => {
+                    listKnifes.push(mainScene.physics.add.image(player.x, player.y, 'knife').setScale(0.2).setOrigin(0.5));
+                    listKnifes[listKnifes.length - 1].setVelocityX(600);
+                }
+            });
+
         }
     }
 }
