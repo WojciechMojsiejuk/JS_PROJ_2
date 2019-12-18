@@ -172,7 +172,7 @@ function create() {
     useShieldKey = this.input.keyboard.addKey('E');
     useShieldKey.on('down', useShield);
 
-    throwKnifeKey = this.input.keyboard.addKey('ENTER');
+    throwKnifeKey = this.input.keyboard.addKey('Q');
     throwKnifeKey.on('down', throwKnife);
     //krampus
 
@@ -197,7 +197,7 @@ function create() {
     });
 
     //music section begin
-    let introMusicConfig = {
+    this.introMusicConfig = {
             mute: false,
             volume: 1,
             rate: 1,
@@ -208,7 +208,7 @@ function create() {
 
         };
 
-    let mainThemeMusicConfig = {
+    this.mainThemeMusicConfig = {
         mute: false,
         volume: 1,
         rate: 1,
@@ -218,11 +218,24 @@ function create() {
         delay: 50000
 
     };
+
+    this.outroMusicConfig = {
+        mute: false,
+        volume: 1,
+        rate: 1,
+        detune: 0,
+        seek: 0,
+        loop: true,
+        delay: 0
+
+    };
     this.game_intro_music = this.sound.add("intro");
-    this.game_intro_music.play(introMusicConfig);
+    this.game_intro_music.play(this.introMusicConfig);
 
     this.game_main_theme_music = this.sound.add("main_theme");
-    this.game_main_theme_music.play(mainThemeMusicConfig);
+    this.game_main_theme_music.play(this.mainThemeMusicConfig);
+
+    this.game_outro_music = this.sound.add("outro");
 
     //music section end
     this.cameras.main.setBounds(0, 0, 3200, 600);
@@ -272,7 +285,7 @@ function create() {
     this.physics.add.collider(player, krampus, collideEnemy);
 
     //tutorial
-    moveText = this.add.text(0, 120, 'MOVE [W, A, S, D]', { fontFamily: 'Roboto Condensed' }).setScrollFactor(0);
+    moveText = this.add.text(0, 120, 'MOVE: ARROWS', { fontFamily: 'Roboto Condensed' }).setScrollFactor(0);
     moveText.setStyle({
         fontSize: '24px',
         fontFamily: 'Roboto Condensed',
@@ -286,7 +299,7 @@ function create() {
         color: '#ffffff',
         align: 'center',
     });
-    throwKnifeText = this.add.text(0, 180, 'THROW KNIFE: ENTER', { fontFamily: 'Roboto Condensed' }).setScrollFactor(0);
+    throwKnifeText = this.add.text(0, 180, 'THROW KNIFE: Q', { fontFamily: 'Roboto Condensed' }).setScrollFactor(0);
     throwKnifeText.setStyle({
         fontSize: '24px',
         fontFamily: 'Roboto Condensed',
@@ -437,9 +450,11 @@ function updateLifes()
 
 function updateGameEnd()
 {
-    if(player.lifes == 0)
+    if(player.lifes == 0 && !gameOver)
     {
         gameOver = true;
+        mainScene.game_main_theme_music.stop(mainScene.mainThemeMusicConfig);
+        mainScene.game_outro_music.play(mainScene.outroMusicConfig);
     }
     if(gameOver)
         gameOverText.visible = true;
@@ -527,11 +542,11 @@ function updateShields()
     {
         if(shieldTimer.getElapsed() < shieldTimer.delay)
         {
-            player.tint = 0x000000;
+            player.setTintFill(0x00FF00);
         }
         else
         {
-            player.tint = 0xFFFFFF;
+            player.setTintFill(0x000000);
         }
     }
 }
@@ -557,12 +572,14 @@ function throwKnife()
         }
         else
         {
+            player_is_attacking = true;
             player.anims.play('player_attack', true);
             mainScene.time.addEvent({
                 delay: 500, // in ms
                 callback: () => {
                     listKnifes.push(mainScene.physics.add.image(player.x, player.y, 'knife').setScale(0.2).setOrigin(0.5));
                     listKnifes[listKnifes.length - 1].setVelocityX(600);
+                    player_is_attacking = false;
                 }
             });
 
@@ -574,12 +591,9 @@ function collectHearth(object1, object2)
 {
     if(!gameOver)
     {
-        if(player.lifes < player.maxLifes)
-        {
-            player.lifes += 1;
-            hearths.remove(object2);
-            object2.destroy();
-        }
+        player.lifes += 1;
+        hearths.remove(object2);
+        object2.destroy();
     }
 }
 
@@ -587,12 +601,9 @@ function collectShield(object1, object2)
 {
     if(!gameOver)
     {
-        if(player.shields < player.maxShields)
-        {
-            player.shields += 1;
-            shields.remove(object2);
-            object2.destroy();
-        }
+        player.shields += 1;
+        shields.remove(object2);
+        object2.destroy();
     }
 }
 
