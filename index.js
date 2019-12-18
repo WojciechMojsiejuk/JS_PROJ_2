@@ -170,7 +170,10 @@ function create() {
 
     //let atlasTexture = this.textures.get('player');
     //let frames = atlasTexture.getFrameNames();
+    //colliders
     this.physics.add.collider(player, layers["collision"]);
+    this.physics.add.collider(player, hearths, collectHearth);
+    this.physics.add.collider(player, shields, collectShield);
 
     this.anims.create({
         key: 'krampus_walk',
@@ -241,8 +244,10 @@ function create() {
     //    repeat: -1
 
     krampus = this.physics.add.sprite(1600,300,'krampus');
+    krampus.lifes = 5;
+    this.physics.add.collider(krampus, listKnifes, loseKrampusLife);
     this.physics.add.collider(krampus, layers["collision"]);
-    this.physics.add.collider(krampus, player);
+   //this.physics.add.collider(krampus, player);
     krampus.play('krampus_walk');
 
     this.tweens.add({
@@ -256,6 +261,7 @@ function create() {
         flipX: true
 
     });
+    this.physics.add.collider(player, krampus, collideEnemy);
 }
 
 function managePlayerInput()
@@ -313,15 +319,21 @@ function update()
     if(!gameOver)
     {
         managePlayerInput();
-        this.physics.collide(krampus, player, function()
-        {
-            console.log("Collided")
-            loseHearth();
-        });
+        // this.physics.collide(krampus, player, function()
+        // {
+        //     console.log("Collided")
+        //     loseHearth();
+        // });
         updateLifes();
         updateShields();
         updateGameEnd();
     }
+}
+
+function collideEnemy()
+{
+    console.log("Collided")
+    loseHearth();
 }
 
 function loseHearth()
@@ -366,15 +378,17 @@ function updateShields()
 {
     if(player.shields > player.maxShields)
     {
-        player.shields = player.shields;
+        player.shields = player.maxShields;
     }
     //Show/hide life images
     for(let i = 0; i < player.shields; i++)
     {
+        //console.log(i);
         shieldImages[i].visible = true;
     }
     for(let i = player.shields; i<shieldImages.length; i++)
     {
+        //console.log(i);
         shieldImages[i].visible = false;
     }
     if(shieldTimer != undefined)
@@ -405,6 +419,43 @@ function throwKnife()
             listKnifes.push(mainScene.physics.add.image(player.x, player.y, 'knife').setScale(0.2).setOrigin(0.5));
             listKnifes[listKnifes.length - 1].setVelocityX(600);
         }
+    }
+}
+
+function collectHearth(object1, object2)
+{
+    if(!gameOver)
+    {
+        if(player.lifes < player.maxLifes)
+        {
+            player.lifes += 1;
+            hearths.remove(object2);
+            object2.destroy();
+        }
+    }
+}
+
+function collectShield(object1, object2)
+{
+    if(!gameOver)
+    {
+        if(player.shields < player.maxShields)
+        {
+            player.shields += 1;
+            shields.remove(object2);
+            object2.destroy();
+        }
+    }
+}
+
+function loseKrampusLife(object1, object2) {
+    krampus.lifes -= 1;
+    //destroy knife
+    object2.destroy();
+    console.log("Krampus lifes: " + krampus.lifes);
+    if(krampus.lifes <= 0)
+    {
+        krampus.destroy();
     }
 }
 
