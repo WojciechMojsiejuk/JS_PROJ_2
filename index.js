@@ -72,10 +72,14 @@ var throwKnifeKey;
 var listKnifes = new Array();
 //game over
 var gameOver = false, gameOverText;
+//level passed
+var levelPassed = false, levelPassedText, levelPassPositionX = 3050;
 //keyboard
 var cursors;
 //enemies
 var krampus;
+//tutorial
+var moveText, shieldText, throwKnifeText;
 
 function create() {
     mainScene = this;
@@ -262,6 +266,38 @@ function create() {
 
     });
     this.physics.add.collider(player, krampus, collideEnemy);
+
+    //tutorial
+    moveText = this.add.text(0, 120, 'MOVE [W, A, S, D]', { fontFamily: 'Roboto Condensed' }).setScrollFactor(0);
+    moveText.setStyle({
+        fontSize: '24px',
+        fontFamily: 'Roboto Condensed',
+        color: '#ffffff',
+        align: 'center',
+    });
+    shieldText = this.add.text(0, 150, 'USE SHIELD: E', { fontFamily: 'Roboto Condensed' }).setScrollFactor(0);
+    shieldText.setStyle({
+        fontSize: '24px',
+        fontFamily: 'Roboto Condensed',
+        color: '#ffffff',
+        align: 'center',
+    });
+    throwKnifeText = this.add.text(0, 180, 'THROW KNIFE: ENTER', { fontFamily: 'Roboto Condensed' }).setScrollFactor(0);
+    throwKnifeText.setStyle({
+        fontSize: '24px',
+        fontFamily: 'Roboto Condensed',
+        color: '#ffffff',
+        align: 'center',
+    });
+    //level passed
+    levelPassedText = this.add.text(400, 320, 'YOU WON', { fontFamily: 'Roboto Condensed' }).setOrigin(0.5).setScrollFactor(0);
+    levelPassedText.setStyle({
+        fontSize: '64px',
+        fontFamily: 'Roboto Condensed',
+        color: '#ffffff',
+        align: 'center',
+    });
+    levelPassedText.visible = false;
 }
 
 function managePlayerInput()
@@ -327,6 +363,7 @@ function update()
         updateLifes();
         updateShields();
         updateGameEnd();
+        checkLevelPassed();
     }
 }
 
@@ -456,6 +493,18 @@ function loseKrampusLife(object1, object2) {
     if(krampus.lifes <= 0)
     {
         krampus.destroy();
+    }
+}
+
+function checkLevelPassed()
+{
+    if(!gameOver)
+    {
+        if(player.x >= levelPassPositionX)
+        {
+            levelPassed = true;
+            levelPassedText.visible = true;
+        }
     }
 }
 
