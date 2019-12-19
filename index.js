@@ -10,7 +10,7 @@ var config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 500 },
-            debug: true
+            debug: false
         }
     },
     scene: {
@@ -25,14 +25,16 @@ var game = new Phaser.Game(config);
 
 function preload() {
 
+
     //Load image tilesets
     this.load.image('blocks', 'Assets/Tilemaps/blocks.png');
     this.load.image('fallen_tree', 'Assets/Tilemaps/fallen_tree.png');
     this.load.image('gate', 'Assets/Tilemaps/gate.png');
     this.load.image('tree', 'Assets/Tilemaps/tree.png');
+    this.load.image('heart', 'Assets/Tilemaps/heart.png');
 
     //Load map
-    this.load.tilemapTiledJSON('map', 'Assets/Tilemaps/first_level.json');
+    this.load.tilemapTiledJSON('map', 'Assets/Tilemaps/world.json');
 
     //Load background
     this.load.image('background', 'Assets/dark_background.png');
@@ -41,7 +43,7 @@ function preload() {
     this.load.atlas('player', 'Assets/Character/heroine.png', 'Assets/Character/heroine.json');
     this.load.image('hearth', 'Assets/Character/Hearth.png');
     this.load.image('shield', 'Assets/Character/Shield.png');
-    this.load.image('knife', 'Assets/Character/Knife.png');
+    this.load.atlas('knife', 'Assets/Character/knife.png', 'Assets/Character/knife.json');
 
     //Load enemies
     this.load.atlas('krampus', 'Assets/Enemies/Krampus/krampus.png', 'Assets/Enemies/Krampus/krampus.json');
@@ -50,6 +52,7 @@ function preload() {
     this.load.audio("intro", 'Assets/Sounds/moon-intro.mp3');
     this.load.audio("main_theme", 'Assets/Sounds/moon-main_theme.mp3');
     this.load.audio("outro", 'Assets/Sounds/moon-outro.mp3');
+    this.load.audio("knife-stab", 'Assets/Sounds/knife-stab.mp3');
     // this.load.image('platform', 'Assets/StoneGate.png')
     //
     // this.load.spritesheet('player',
@@ -73,7 +76,7 @@ var listKnifes = new Array();
 //game over
 var gameOver = false, gameOverText;
 //level passed
-var levelPassed = false, levelPassedText, levelPassPositionX = 3050;
+var levelPassed = false, levelPassedText, levelPassPositionX = 15950;
 //keyboard
 var cursors;
 //enemies
@@ -94,41 +97,46 @@ function create() {
 
     //Load tilesets
     tilesets["blocks"] = map.addTilesetImage('blocks','blocks');
-    tilesets["fallen_tree"] = map.addTilesetImage('fallen_tree','fallen_tree');
-    tilesets["gate"] = map.addTilesetImage('gate','gate');
-    tilesets["tree"] = map.addTilesetImage('tree','tree');
+    tilesets["heart"] = map.addTilesetImage('heart','heart');
+    // tilesets["fallen_tree"] = map.addTilesetImage('fallen_tree','fallen_tree');
+    // tilesets["gate"] = map.addTilesetImage('gate','gate');
+    // tilesets["tree"] = map.addTilesetImage('tree','tree');
 
     //Layer 1
-    layers["background2"] = map.createStaticLayer('background2', [ tilesets["tree"], tilesets["fallen_tree"], tilesets["blocks"], tilesets["gate"] ], 0, 0);
+    // layers["background2"] = map.createStaticLayer('background2', [ tilesets["tree"], tilesets["fallen_tree"], tilesets["blocks"], tilesets["gate"] ], 0, 0);
 
     //collectables1 == shields
-    shields = this.physics.add.group({
-        allowGravity: false,
-        immovable: true
-    });
-    const shieldObjects = map.getObjectLayer('collectables1')['objects'];
-    shieldObjects.forEach(shieldObject => {
-        shields.create(shieldObject.x, shieldObject.y, 'shield');
-    });
-    //collectables2 == hearths
+    // shields = this.physics.add.group({
+    //     allowGravity: false,
+    //     immovable: true
+    // });
+    // const shieldObjects = map.getObjectLayer('collectables1')['objects'];
+    // shieldObjects.forEach(shieldObject => {
+    //     shields.create(shieldObject.x, shieldObject.y, 'shield');
+    // });
+    // collectables2 == hearths
     hearths = this.physics.add.group({
         allowGravity: false,
         immovable: true
     });
+    console.log(map);
     const hearthObjects = map.getObjectLayer('collectables2')['objects'];
     hearthObjects.forEach(hearthObject => {
         // Add new hearths to our sprite group
         // const hearthObj =
-        hearths.create(hearthObject.x, hearthObject.y, 'hearth');
+        console.log(hearthObject.x);
+        console.log(hearthObject.y);
+        hearths.create(hearthObject.x+16, 1*hearthObject.y-16, 'heart');
     });
     // layers["collectables1"] = map.createStaticLayer('collectables1', tilesets["blocks"], 0, 0);
+    // layers["collectables2"] = map.createStaticLayer('collectables2', tilesets["heart"], 0, 0);
 
     //Layer 3
     layers["collision"] = map.createStaticLayer('collision', tilesets["blocks"], 0, 0);
     layers["collision"].setCollisionByExclusion(-1, true);
 
     //Layer 4
-    layers["background1"] = map.createStaticLayer('background1', tilesets["blocks"], 0, 0);
+    // layers["background1"] = map.createStaticLayer('background1', tilesets["blocks"], 0, 0);
 
 
     //player section
@@ -183,6 +191,7 @@ function create() {
     this.physics.add.collider(player, hearths, collectHearth);
     this.physics.add.collider(player, shields, collectShield);
 
+    //enemy animations
     this.anims.create({
         key: 'krampus_walk',
         frames: this.anims.generateFrameNames('krampus', {
@@ -197,16 +206,16 @@ function create() {
     });
 
     //music section begin
-    this.introMusicConfig = {
-            mute: false,
-            volume: 1,
-            rate: 1,
-            detune: 0,
-            seek: 0,
-            loop: false,
-            delay: 0
-
-        };
+    // this.introMusicConfig = {
+    //         mute: false,
+    //         volume: 1,
+    //         rate: 1,
+    //         detune: 0,
+    //         seek: 0,
+    //         loop: false,
+    //         delay: 0
+    //
+    //     };
 
     this.mainThemeMusicConfig = {
         mute: false,
@@ -215,7 +224,7 @@ function create() {
         detune: 0,
         seek: 0,
         loop: true,
-        delay: 50000
+        delay: 0
 
     };
 
@@ -229,17 +238,30 @@ function create() {
         delay: 0
 
     };
-    this.game_intro_music = this.sound.add("intro");
-    this.game_intro_music.play(this.introMusicConfig);
 
+    this.knifeStabFXConfig = {
+        mute: false,
+        volume: 1,
+        rate: 1,
+        detune: 0,
+        seek: 0,
+        loop: false,
+        delay: 0
+
+    };
+
+    // this.game_intro_music = this.sound.add("intro");
     this.game_main_theme_music = this.sound.add("main_theme");
+    this.game_outro_music = this.sound.add("outro");
+    this.enemy_knife_stab = this.sound.add("knife-stab");
+    // game.sound.setDecodedCallback([this.game_intro_music, this.game_main_theme_music, this.game_outro_music, this.enemy_knife_stab], audioReady, this);
+
+    // this.game_intro_music.play(this.introMusicConfig);
     this.game_main_theme_music.play(this.mainThemeMusicConfig);
 
-    this.game_outro_music = this.sound.add("outro");
-
     //music section end
-    this.cameras.main.setBounds(0, 0, 3200, 600);
-    this.physics.world.setBounds(0, 0, 3200, 600);
+    this.cameras.main.setBounds(0, 0, 16000, 640);
+    this.physics.world.setBounds(0, 0, 16000, 640);
     //this.camera.main.setOrigin()
     this.cameras.main.startFollow(player);
     cursors = this.input.keyboard.createCursorKeys();
@@ -252,23 +274,13 @@ function create() {
         align: 'center',
     });
     gameOverText.visible = false;
-    //this.anims.create({
-    //    key: 'walk',
-    //    frames: this.anims.generateFrameNames('krampus', {
-    //        start: 0,
-    //        end: 2,
-    //        zeroPad: 1,
-    //        prefix: 'Krampus',
-    //        suffix: '.png'
-    //    }),
-    //    frameRate: 5,
-    //    repeat: -1
+
 
     krampus = this.physics.add.sprite(1600,300,'krampus');
     krampus.lifes = 5;
+    this.physics.add.collider(listKnifes, layers["collision"],  knifeCollisionHandler);
     this.physics.add.collider(krampus, listKnifes, loseKrampusLife);
     this.physics.add.collider(krampus, layers["collision"]);
-   //this.physics.add.collider(krampus, player);
     krampus.play('krampus_walk');
 
     this.tweens.add({
@@ -381,6 +393,21 @@ function create() {
         frameRate: 6,
         repeat: false
     });
+
+    //knife animation
+
+    this.anims.create({
+        key: 'knife_throw',
+        frames: this.anims.generateFrameNames('knife', {
+            start: 1,
+            end: 4,
+            zeroPad: 1,
+            prefix: 'knife__',
+            suffix: '.png'
+        }),
+        frameRate: 8,
+        repeat: -1
+    });
 }
 
 function managePlayerInput()
@@ -428,6 +455,11 @@ function managePlayerInput()
 
     }
 }
+
+// function audioReady()
+// {
+//      console.log("Audio loaded");
+// }
 
 function updateLifes()
 {
@@ -563,7 +595,9 @@ function throwKnife()
             mainScene.time.addEvent({
                 delay: 500, // in ms
                 callback: () => {
-                    listKnifes.push(mainScene.physics.add.image(player.x, player.y, 'knife').setScale(0.2).setOrigin(0.5));
+                    // let knife = mainScene.physics.add.image(player.x, player.y, 'knife').setScale(1).setOrigin(0.5);
+                    // knife.anims.play('knife_throw')
+                    listKnifes.push(mainScene.physics.add.image(player.x, player.y, 'knife').setScale(1).setOrigin(0.5));
                     listKnifes[listKnifes.length - 1].setVelocityX(-600);
                     player_is_attacking = false;
                 }
@@ -577,7 +611,9 @@ function throwKnife()
             mainScene.time.addEvent({
                 delay: 500, // in ms
                 callback: () => {
-                    listKnifes.push(mainScene.physics.add.image(player.x, player.y, 'knife').setScale(0.2).setOrigin(0.5));
+                    // let knife = mainScene.physics.add.image(player.x, player.y, 'knife').setScale(1).setOrigin(0.5);
+                    // knife.anims.play('knife_throw')
+                    listKnifes.push(mainScene.physics.add.image(player.x, player.y, 'knife').setScale(1).setOrigin(0.5));
                     listKnifes[listKnifes.length - 1].setVelocityX(600);
                     player_is_attacking = false;
                 }
@@ -607,8 +643,15 @@ function collectShield(object1, object2)
     }
 }
 
+function knifeCollisionHandler(object1, object2) {
+    console.log(object1);
+    //destroy knife
+    object1.destroy();
+}
+
 function loseKrampusLife(object1, object2) {
     krampus.lifes -= 1;
+    mainScene.enemy_knife_stab.play(mainScene.knifeStabFXConfig);
     //destroy knife
     object2.destroy();
     console.log("Krampus lifes: " + krampus.lifes);
