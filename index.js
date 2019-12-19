@@ -4,7 +4,7 @@ const appDiv = document.getElementById('app');
 var config = {
     type: Phaser.AUTO,
     width: 800,
-    height: 640,
+    height: 480,
     parent: appDiv,
     physics: {
         default: 'arcade',
@@ -32,6 +32,8 @@ function preload() {
     this.load.image('gate', 'Assets/Tilemaps/gate.png');
     this.load.image('tree', 'Assets/Tilemaps/tree.png');
     this.load.image('heart', 'Assets/Tilemaps/heart.png');
+    this.load.image('spikes', 'Assets/Tilemaps/spikes.png');
+    this.load.image('tree_trunk', 'Assets/Tilemaps/TreeTrunk.png');
 
     //Load map
     this.load.tilemapTiledJSON('map', 'Assets/Tilemaps/world.json');
@@ -76,11 +78,12 @@ var listKnifes = new Array();
 //game over
 var gameOver = false, gameOverText;
 //level passed
-var levelPassed = false, levelPassedText, levelPassPositionX = 15950;
+var levelPassed = false, levelPassedText, levelPassPositionX = 8896;
 //keyboard
 var cursors;
 //enemies
 var krampus;
+var spikes;
 
 //tutorial
 var moveText, shieldText, throwKnifeText;
@@ -98,45 +101,52 @@ function create() {
     //Load tilesets
     tilesets["blocks"] = map.addTilesetImage('blocks','blocks');
     tilesets["heart"] = map.addTilesetImage('heart','heart');
-    // tilesets["fallen_tree"] = map.addTilesetImage('fallen_tree','fallen_tree');
-    // tilesets["gate"] = map.addTilesetImage('gate','gate');
-    // tilesets["tree"] = map.addTilesetImage('tree','tree');
+    tilesets["fallen_tree"] = map.addTilesetImage('fallen_tree','fallen_tree');
+    tilesets["gate"] = map.addTilesetImage('gate','gate');
+    tilesets["tree"] = map.addTilesetImage('tree','tree');
+    tilesets["tree_trunk"] = map.addTilesetImage('TreeTrunk','tree_trunk');
 
     //Layer 1
-    // layers["background2"] = map.createStaticLayer('background2', [ tilesets["tree"], tilesets["fallen_tree"], tilesets["blocks"], tilesets["gate"] ], 0, 0);
+    layers["background2"] = map.createStaticLayer('background2', [ tilesets["tree"], tilesets["fallen_tree"], tilesets["blocks"], tilesets["gate"], tilesets["tree_trunk"] ], 0, 0);
 
     //collectables1 == shields
-    // shields = this.physics.add.group({
-    //     allowGravity: false,
-    //     immovable: true
-    // });
-    // const shieldObjects = map.getObjectLayer('collectables1')['objects'];
-    // shieldObjects.forEach(shieldObject => {
-    //     shields.create(shieldObject.x, shieldObject.y, 'shield');
-    // });
+    shields = this.physics.add.group({
+        allowGravity: false,
+        immovable: true
+    });
+    const shieldObjects = map.getObjectLayer('collectables1')['objects'];
+    shieldObjects.forEach(shieldObject => {
+        shields.create(shieldObject.x+16, shieldObject.y-16, 'shield');
+    });
     // collectables2 == hearths
     hearths = this.physics.add.group({
         allowGravity: false,
         immovable: true
     });
-    console.log(map);
     const hearthObjects = map.getObjectLayer('collectables2')['objects'];
     hearthObjects.forEach(hearthObject => {
         // Add new hearths to our sprite group
-        // const hearthObj =
-        console.log(hearthObject.x);
-        console.log(hearthObject.y);
-        hearths.create(hearthObject.x+16, 1*hearthObject.y-16, 'heart');
+        hearths.create(hearthObject.x+16, hearthObject.y-16, 'heart');
     });
-    // layers["collectables1"] = map.createStaticLayer('collectables1', tilesets["blocks"], 0, 0);
-    // layers["collectables2"] = map.createStaticLayer('collectables2', tilesets["heart"], 0, 0);
+
+    // spikes
+    spikes = this.physics.add.group({
+        allowGravity: false,
+        immovable: true
+    });
+    const spikeObjects = map.getObjectLayer('spikes')['objects'];
+    spikeObjects.forEach(spikeObject => {
+        // Add new spikes to our sprite group
+        spikes.create(spikeObject.x+16, spikeObject.y-16, 'spikes');
+    });
+
 
     //Layer 3
     layers["collision"] = map.createStaticLayer('collision', tilesets["blocks"], 0, 0);
     layers["collision"].setCollisionByExclusion(-1, true);
 
     //Layer 4
-    // layers["background1"] = map.createStaticLayer('background1', tilesets["blocks"], 0, 0);
+    layers["background1"] = map.createStaticLayer('background1', tilesets["blocks"], 0, 0);
 
 
     //player section
@@ -295,6 +305,7 @@ function create() {
 
     });
     this.physics.add.collider(player, krampus, collideEnemy);
+    this.physics.add.overlap(player, spikes, collideEnemy);
 
     //tutorial
     moveText = this.add.text(0, 120, 'MOVE: ARROWS', { fontFamily: 'Roboto Condensed' }).setScrollFactor(0);
@@ -686,3 +697,8 @@ function checkLevelPassed()
 //     return Phaser.Rectangle.intersects(boundsA, boundsB);
 //
 // }
+
+//7752
+//5152
+//3840
+//4128
