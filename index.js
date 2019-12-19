@@ -597,8 +597,9 @@ function throwKnife()
                 callback: () => {
                     // let knife = mainScene.physics.add.image(player.x, player.y, 'knife').setScale(1).setOrigin(0.5);
                     // knife.anims.play('knife_throw')
-                    listKnifes.push(mainScene.physics.add.image(player.x, player.y, 'knife').setScale(1).setOrigin(0.5));
+                    listKnifes.push(mainScene.physics.add.sprite(player.x, player.y, 'knife').setScale(1).setOrigin(0.5));
                     listKnifes[listKnifes.length - 1].setVelocityX(-600);
+                    listKnifes[listKnifes.length - 1].anims.play('knife_throw');
                     player_is_attacking = false;
                 }
             });
@@ -613,8 +614,9 @@ function throwKnife()
                 callback: () => {
                     // let knife = mainScene.physics.add.image(player.x, player.y, 'knife').setScale(1).setOrigin(0.5);
                     // knife.anims.play('knife_throw')
-                    listKnifes.push(mainScene.physics.add.image(player.x, player.y, 'knife').setScale(1).setOrigin(0.5));
+                    listKnifes.push(mainScene.physics.add.sprite(player.x, player.y, 'knife').setScale(1).setOrigin(0.5));
                     listKnifes[listKnifes.length - 1].setVelocityX(600);
+                    listKnifes[listKnifes.length - 1].anims.play('knife_throw');
                     player_is_attacking = false;
                 }
             });
