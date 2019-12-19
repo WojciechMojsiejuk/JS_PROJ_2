@@ -1,0 +1,28 @@
+{"frames": [
+
+{
+	"filename": "Krampus_walk_0.png",
+	"frame": {"x":0,"y":0,"w":181,"h":248},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":181,"h":248},
+	"sourceSize": {"w":181,"h":248}
+},
+{
+	"filename": "Krampus_walk_1.png",
+	"frame": {"x":0,"y":248,"w":179,"h":243},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":179,"h":243},
+	"sourceSize": {"w":179,"h":243}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "krampus.png",
+	"format": "RGBA8888",
+	"size": {"w":181,"h":491},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:b6c866b8fdf403a46c850887f4e62fdc:e424e933253a72f3da3b8924852ba1f5:39f51d998c48f860bda7ba0ebc105a62$"
+}
+}

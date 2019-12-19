@@ -1,0 +1,44 @@
+{"frames": [
+
+{
+	"filename": "TestCharacter.png",
+	"frame": {"x":0,"y":0,"w":280,"h":818},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":280,"h":818},
+	"sourceSize": {"w":280,"h":818}
+},
+{
+	"filename": "TestCharacterFalling.png",
+	"frame": {"x":280,"y":0,"w":280,"h":818},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":280,"h":818},
+	"sourceSize": {"w":280,"h":818}
+},
+{
+	"filename": "TestCharacterWalk1.png",
+	"frame": {"x":560,"y":0,"w":280,"h":818},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":280,"h":818},
+	"sourceSize": {"w":280,"h":818}
+},
+{
+	"filename": "TestCharacterWalk2.png",
+	"frame": {"x":840,"y":0,"w":280,"h":818},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":280,"h":818},
+	"sourceSize": {"w":280,"h":818}
+}],
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "CharacterMap.png",
+	"format": "RGBA8888",
+	"size": {"w":1120,"h":818},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:2d0c358b16b029794fd46d7231d85a39:1d5b01de0f6beafbb57571c1bd0a88d9:4e66ff9b78225fc425a1028b2767b605$"
+}
+}
